@@ -1,0 +1,2197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>VisionCraft AI - Professional Image Editor</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #7c3aed;
+        --primary-dark: #6d28d9;
+        --secondary: #ec4899;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+        --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        --card-bg: rgba(255, 255, 255, 0.98);
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        min-height: 100vh;
+      }
+
+      .navbar {
+        background: rgba(15, 23, 42, 0.95) !important;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        padding: 0.8rem 2rem;
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent !important;
+      }
+
+      .navbar-brand i {
+        background: none;
+        color: var(--primary);
+        margin-right: 8px;
+      }
+
+      .main-container {
+        padding: 20px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        background: var(--card-bg);
+        overflow: hidden;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        background: var(--gradient);
+        color: white;
+        border-radius: 24px 24px 0 0 !important;
+        padding: 16px 20px;
+        font-weight: 600;
+        border: none;
+      }
+
+      .card-header i {
+        margin-right: 10px;
+      }
+
+      .tool-btn {
+        margin: 4px;
+        border-radius: 12px;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+        font-weight: 500;
+      }
+
+      .tool-btn:hover {
+        transform: scale(1.02);
+      }
+
+      .btn-gradient {
+        background: var(--gradient);
+        color: white;
+        border: none;
+      }
+
+      .btn-gradient:hover {
+        opacity: 0.9;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .image-container {
+        background: #f1f5f9;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #currentImage {
+        max-width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .tool-section {
+        margin-bottom: 24px;
+      }
+
+      .tool-section h6 {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 12px;
+        border-left: 3px solid var(--primary);
+        padding-left: 12px;
+      }
+
+      .scrollable-panel {
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding-right: 8px;
+      }
+
+      .scrollable-panel::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      .scrollable-panel::-webkit-scrollbar-track {
+        background: #e2e8f0;
+        border-radius: 10px;
+      }
+
+      .scrollable-panel::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 10px;
+      }
+
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .filter-preview {
+        text-align: center;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 16px;
+        transition: all 0.2s;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+      }
+
+      .filter-preview:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+      }
+
+      .filter-preview i {
+        font-size: 24px;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .slider-container {
+        margin-bottom: 16px;
+      }
+
+      .slider-container label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--dark);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #e2e8f0;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]:focus {
+        outline: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(5px);
+      }
+
+      .loading-content {
+        background: white;
+        padding: 30px 50px;
+        border-radius: 24px;
+        text-align: center;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e2e8f0;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .notification {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        padding: 14px 24px;
+        border-radius: 16px;
+        color: white;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        font-weight: 500;
+      }
+
+      .notification.success {
+        background: var(--success);
+      }
+      .notification.error {
+        background: var(--danger);
+      }
+      .notification.info {
+        background: var(--primary);
+      }
+      .notification.warning {
+        background: var(--warning);
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr 300px;
+        gap: 20px;
+      }
+
+      @media (max-width: 1200px) {
+        .editor-grid {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+        .scrollable-panel {
+          max-height: 350px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          padding: 12px;
+        }
+        .tool-btn {
+          font-size: 0.7rem;
+          padding: 6px 10px;
+        }
+        .filter-preview {
+          padding: 6px;
+        }
+        .filter-preview i {
+          font-size: 18px;
+        }
+      }
+
+      .history-item {
+        padding: 10px;
+        border-bottom: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-radius: 12px;
+      }
+
+      .history-item:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+      }
+
+      .history-item small {
+        font-size: 0.7rem;
+        color: #94a3b8;
+      }
+
+      .badge-ai {
+        background: var(--gradient);
+        color: white;
+        font-size: 0.6rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-left: 6px;
+      }
+
+      .effect-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .effect-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .effect-card i {
+        font-size: 32px;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .effect-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .btn-group-custom {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .stats-number {
+        font-size: 28px;
+        font-weight: bold;
+        display: block;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .modal-content {
+        border-radius: 24px;
+        border: none;
+      }
+
+      .modal-header {
+        background: var(--gradient);
+        color: white;
+        border-radius: 24px 24px 0 0;
+      }
+
+      .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+      }
+
+      .form-control,
+      .form-control:focus {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .cartoon-style-selector {
+        margin-top: 15px;
+      }
+
+      .cartoon-style-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        margin: 4px;
+        border-radius: 20px;
+        background: #f0f0f0;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.8rem;
+      }
+
+      .cartoon-style-badge.active {
+        background: var(--gradient);
+        color: white;
+      }
+
+      .method-badge {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 4px 12px;
+        background: #e0e0e0;
+        border-radius: 20px;
+        font-size: 0.7rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-magic"></i> VisionCraft AI
+          <span class="badge-ai">AI Powered</span>
+        </a>
+        <div id="authSection" class="auth-buttons">
+          <button
+            class="btn btn-outline-light btn-sm"
+            onclick="showLoginModal()"
+            id="loginBtn"
+          >
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+          <button
+            class="btn btn-light btn-sm"
+            onclick="showRegisterModal()"
+            id="registerBtn"
+          >
+            <i class="fas fa-user-plus"></i> Register
+          </button>
+          <div id="userInfo" style="display: none" class="user-info">
+            <div class="user-avatar" id="userAvatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span id="username" style="color: white"></span>
+            <button class="btn btn-outline-light btn-sm" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <div class="editor-grid">
+        <!-- Left Panel - Tools -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-tools"></i> Editing Tools
+            </div>
+            <div class="card-body scrollable-panel">
+              <!-- Basic Tools -->
+              <div class="tool-section">
+                <h6><i class="fas fa-crop-alt"></i> Basic Tools</h6>
+                <div class="d-flex flex-wrap">
+                  <button
+                    class="btn btn-sm btn-outline-primary tool-btn"
+                    onclick="openCropModal()"
+                  >
+                    <i class="fas fa-crop"></i> Crop
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary tool-btn"
+                    onclick="rotateImage(90)"
+                  >
+                    <i class="fas fa-undo-alt"></i> Rotate R
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary tool-btn"
+                    onclick="rotateImage(-90)"
+                  >
+                    <i class="fas fa-redo-alt"></i> Rotate L
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary tool-btn"
+                    onclick="flipImage('horizontal')"
+                  >
+                    <i class="fas fa-arrows-alt-h"></i> Flip H
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary tool-btn"
+                    onclick="flipImage('vertical')"
+                  >
+                    <i class="fas fa-arrows-alt-v"></i> Flip V
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <div class="tool-section">
+                <h6><i class="fas fa-filter"></i> Filters</h6>
+                <div class="filter-grid">
+                  <div
+                    class="filter-preview"
+                    onclick="applyFilter('grayscale')"
+                  >
+                    <i class="fas fa-circle"></i>
+                    <small>Grayscale</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('sepia')">
+                    <i class="fas fa-tint"></i>
+                    <small>Sepia</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('blur')">
+                    <i class="fas fa-bezier-curve"></i>
+                    <small>Blur</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('sharpen')">
+                    <i class="fas fa-eye"></i>
+                    <small>Sharpen</small>
+                  </div>
+                  <div
+                    class="filter-preview"
+                    onclick="applyFilter('edge_enhance')"
+                  >
+                    <i class="fas fa-border-all"></i>
+                    <small>Edge</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('emboss')">
+                    <i class="fas fa-cube"></i>
+                    <small>Emboss</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('vibrant')">
+                    <i class="fas fa-palette"></i>
+                    <small>Vibrant</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('invert')">
+                    <i class="fas fa-adjust"></i>
+                    <small>Invert</small>
+                  </div>
+                  <div class="filter-preview" onclick="applyFilter('vignette')">
+                    <i class="fas fa-circle-notch"></i>
+                    <small>Vignette</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Effects - Cartoon Generation Section (from code2) -->
+              <div class="tool-section">
+                <h6>
+                  <i class="fas fa-robot"></i> Cartoon Generator
+                  <span class="badge-ai">AI Powered</span>
+                </h6>
+                <div class="cartoon-style-selector" id="cartoonStyleSelector">
+                  <div class="d-flex flex-wrap">
+                    <span class="cartoon-style-badge active" data-style="anime">🎀 Anime</span>
+                    <span class="cartoon-style-badge" data-style="3d">🎮 3D Cartoon</span>
+                    <span class="cartoon-style-badge" data-style="sketch">📝 Pencil B&W</span>
+                    <span class="cartoon-style-badge" data-style="handdrawn">✏️ Pencil Color</span>
+                    <span class="cartoon-style-badge" data-style="artstyle">🎨 Watercolor</span>
+                    <span class="cartoon-style-badge" data-style="pop_art">🌈 Pop Art Grid</span>
+                    <span class="cartoon-style-badge" data-style="pixel_art">👾 Pixel Art</span>
+                    <span class="cartoon-style-badge" data-style="caricature">🤪 Caricature Warp</span>
+                    <span class="cartoon-style-badge" data-style="ink_wash">🖌️ Ink Wash</span>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-gradient w-100 mt-2"
+                  onclick="generateCartoon()"
+                >
+                  <i class="fas fa-magic"></i> Generate Cartoon
+                </button>
+                <div
+                  id="cartoonMethodBadge"
+                  class="method-badge"
+                  style="display: none"
+                ></div>
+              </div>
+
+              <!-- AI Photo Enhancer -->
+              <div class="tool-section">
+                <h6><i class="fas fa-magic"></i> AI Photo Enhancer</h6>
+                <div class="mb-2">
+                  <select class="form-select form-select-sm" id="enhanceStyle" style="border-radius: 10px; background: #f8fafc;">
+                    <option value="standard">✨ Standard Enhance</option>
+                    <option value="cinematic">🎬 Cinematic (Teal & Orange)</option>
+                    <option value="hdr">📸 HDR Detail Enhance</option>
+                    <option value="portrait_smooth">👤 Portrait Skin Smooth</option>
+                  </select>
+                </div>
+                <button class="btn btn-sm btn-outline-success w-100" onclick="enhanceImage()">
+                  <i class="fas fa-wand-magic-sparkles"></i> Enhance Photo
+                </button>
+              </div>
+
+              <!-- Other AI Effects -->
+              <div class="tool-section">
+                <h6><i class="fas fa-brain"></i> AI Effects & Edits</h6>
+                <div class="effect-grid">
+                  <div class="effect-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white;" onclick="removeBackground()">
+                    <i class="fas fa-cut"></i>
+                    <strong>Remove BG</strong>
+                    <small style="display: block; font-size: 10px">Transparent Cutout</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;" onclick="applyStickerMaker()">
+                    <i class="fas fa-sticky-note"></i>
+                    <strong>Sticker Maker</strong>
+                    <small style="display: block; font-size: 10px">White Border Outline</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;" onclick="showBokehPanel()">
+                    <i class="fas fa-portrait"></i>
+                    <strong>Portrait Bokeh</strong>
+                    <small style="display: block; font-size: 10px">Background Blur</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;" onclick="showExposurePanel()">
+                    <i class="fas fa-images"></i>
+                    <strong>Double Exposure</strong>
+                    <small style="display: block; font-size: 10px">Artistic Blending</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;" onclick="applyFaceBeautify()">
+                    <i class="fas fa-sparkles"></i>
+                    <strong>Face Beautify</strong>
+                    <small style="display: block; font-size: 10px">Skin Retouching</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;" onclick="applyAutoLight()">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Auto Light</strong>
+                    <small style="display: block; font-size: 10px">CLAHE Brightness</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #e11d48, #be123c); color: white;" onclick="applyFaceSpotlight()">
+                    <i class="fas fa-bullseye"></i>
+                    <strong>Face Spotlight</strong>
+                    <small style="display: block; font-size: 10px">Auto Vignette</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;" onclick="applyGlitchEffect()">
+                    <i class="fas fa-bolt"></i>
+                    <strong>Cyberpunk Glitch</strong>
+                    <small style="display: block; font-size: 10px">RGB Shift & Lines</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #d946ef, #a21caf); color: white;" onclick="showNeonPanel()">
+                    <i class="fas fa-sun"></i>
+                    <strong>Neon Glow</strong>
+                    <small style="display: block; font-size: 10px">Glowing Outlines</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #14b8a6, #0d9488); color: white;" onclick="showSplashPanel()">
+                    <i class="fas fa-palette"></i>
+                    <strong>Color Splash</strong>
+                    <small style="display: block; font-size: 10px">Selective Color</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #f43f5e, #e11d48); color: white;" onclick="applyThermalVision()">
+                    <i class="fas fa-thermometer-half"></i>
+                    <strong>Thermal Vision</strong>
+                    <small style="display: block; font-size: 10px">Heatmap Cam</small>
+                  </div>
+                  <div class="effect-card" style="background: linear-gradient(135deg, #64748b, #475569); color: white;" onclick="applySketchBlendEffect()">
+                    <i class="fas fa-pen-nib"></i>
+                    <strong>Sketch Blend</strong>
+                    <small style="display: block; font-size: 10px">Photo-Sketch Hybrid</small>
+                  </div>
+                </div>
+                
+                <!-- Collapsible Control Panels -->
+                <div id="bokehPanel" class="effect-options-panel" style="display: none; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-top: 10px; border: 1px dashed var(--primary);">
+                  <label class="form-label d-flex justify-content-between">Blur Radius: <span id="bokehRadiusVal">15px</span></label>
+                  <input type="range" class="w-100" id="bokehBlurRadius" min="5" max="30" value="15" oninput="document.getElementById('bokehRadiusVal').innerText=this.value+'px'">
+                  <button class="btn btn-sm btn-primary w-100 mt-2" onclick="applyBokeh()"><i class="fas fa-check"></i> Apply Bokeh</button>
+                </div>
+                
+                <div id="neonPanel" class="effect-options-panel" style="display: none; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-top: 10px; border: 1px dashed var(--primary);">
+                  <label class="form-label">Neon Glow Color:</label>
+                  <select class="form-select form-select-sm" id="neonColor">
+                    <option value="cyan">Cyan Glow</option>
+                    <option value="pink">Pink Glow</option>
+                    <option value="lime">Lime Glow</option>
+                    <option value="orange">Orange Glow</option>
+                  </select>
+                  <button class="btn btn-sm btn-primary w-100 mt-2" onclick="applyNeon()"><i class="fas fa-check"></i> Apply Neon</button>
+                </div>
+
+                <div id="splashPanel" class="effect-options-panel" style="display: none; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-top: 10px; border: 1px dashed var(--primary);">
+                  <label class="form-label">Splash Color Channel:</label>
+                  <select class="form-select form-select-sm" id="splashColor">
+                    <option value="red">🔴 Red</option>
+                    <option value="green">🟢 Green</option>
+                    <option value="blue">🔵 Blue</option>
+                    <option value="yellow">🟡 Yellow</option>
+                  </select>
+                  <button class="btn btn-sm btn-primary w-100 mt-2" onclick="applyColorSplash()"><i class="fas fa-check"></i> Apply Splash</button>
+                </div>
+
+                <div id="exposurePanel" class="effect-options-panel" style="display: none; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; margin-top: 10px; border: 1px dashed var(--primary);">
+                  <label class="form-label">Silhouette Texture Pattern:</label>
+                  <select class="form-select form-select-sm" id="exposureTexture">
+                    <option value="stars">🌌 Cosmic Stars</option>
+                    <option value="city">🏙️ Cyber City Lights</option>
+                    <option value="forest">🌲 Forest Trees</option>
+                  </select>
+                  <button class="btn btn-sm btn-primary w-100 mt-2" onclick="applyDoubleExposure()"><i class="fas fa-check"></i> Apply Double Exposure</button>
+                </div>
+              </div>
+
+              <!-- Social Templates -->
+              <div class="tool-section">
+                <h6><i class="fas fa-share-alt"></i> Social Templates</h6>
+                <div class="d-flex flex-wrap">
+                  <button
+                    class="btn btn-sm btn-outline-info tool-btn"
+                    onclick="applyTemplate('instagram')"
+                  >
+                    <i class="fab fa-instagram"></i> Instagram
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-info tool-btn"
+                    onclick="applyTemplate('youtube')"
+                  >
+                    <i class="fab fa-youtube"></i> YouTube
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-info tool-btn"
+                    onclick="applyTemplate('facebook')"
+                  >
+                    <i class="fab fa-facebook"></i> Facebook
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-info tool-btn"
+                    onclick="applyTemplate('linkedin')"
+                  >
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Panel - Image Editor -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-image"></i> Image Editor
+            </div>
+            <div class="card-body">
+              <div class="image-container" style="position: relative; overflow: hidden; min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 20px;">
+                <img id="currentImage" src="" alt="No image loaded" style="max-width: 100%; max-height: 500px; object-fit: contain; border-radius: 12px;" />
+                
+                <!-- Side-by-Side Comparison Slider -->
+                <div class="comparison-slider" id="comparisonSlider" style="display: none; width: 100%; height: 500px; position: relative; overflow: hidden; border-radius: 20px; background: #e2e8f0; user-select: none;">
+                  <img class="img-original" id="sliderOriginal" src="" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; pointer-events:none;" />
+                  <div class="img-edited-container" id="sliderEditedContainer" style="position: absolute; top:0; left:0; width:50%; height:100%; overflow:hidden; border-right:2px solid #7c3aed;">
+                    <img class="img-edited" id="sliderEdited" src="" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; max-width:none; pointer-events:none;" />
+                  </div>
+                  <div class="slider-handle" id="sliderHandle" style="position: absolute; top:0; left:50%; height:100%; width:4px; background:#7c3aed; cursor:ew-resize; transform:translateX(-50%); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10;">
+                    <div style="flex-grow:1; width:2px; background:rgba(255, 255, 255, 0.8);"></div>
+                    <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #7c3aed 0%, #ec4899 100%); color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size:14px;"><i class="fas fa-arrows-alt-h"></i></div>
+                    <div style="flex-grow:1; width:2px; background:rgba(255, 255, 255, 0.8);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="btn-group-custom mt-3">
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  style="display: none"
+                  onchange="uploadImage(this)"
+                />
+                <button
+                  class="btn btn-primary"
+                  onclick="document.getElementById('imageUpload').click()"
+                >
+                  <i class="fas fa-upload"></i> Upload
+                </button>
+                <button class="btn btn-success" onclick="downloadImage()">
+                  <i class="fas fa-download"></i> Download
+                </button>
+                <button class="btn btn-danger" onclick="resetImage()">
+                  <i class="fas fa-undo"></i> Reset
+                </button>
+                <button class="btn btn-info" onclick="detectFaces()">
+                  <i class="fas fa-face-smile"></i> Detect Faces
+                </button>
+                <button class="btn btn-warning" id="compareToggleBtn" onclick="toggleCompareMode()">
+                  <i class="fas fa-columns"></i> Split View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Adjustments -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <i class="fas fa-sliders-h"></i> Adjustments
+            </div>
+            <div class="card-body">
+              <div class="slider-container">
+                <label
+                  >Brightness: <span id="brightnessValue">100</span>%</label
+                >
+                <input
+                  type="range"
+                  id="brightnessSlider"
+                  min="0"
+                  max="200"
+                  value="100"
+                  oninput="adjustBrightness(this.value)"
+                />
+              </div>
+              <div class="slider-container">
+                <label>Contrast: <span id="contrastValue">100</span>%</label>
+                <input
+                  type="range"
+                  id="contrastSlider"
+                  min="0"
+                  max="200"
+                  value="100"
+                  oninput="adjustContrast(this.value)"
+                />
+              </div>
+              <button
+                class="btn btn-sm btn-outline-primary w-100 mt-2"
+                onclick="resetAdjustments()"
+              >
+                <i class="fas fa-undo"></i> Reset Adjustments
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel - Stats & History -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-chart-line"></i> Your Stats
+            </div>
+            <div class="card-body">
+              <div class="stats-card">
+                <i class="fas fa-images"></i> Total Images
+                <span class="stats-number" id="totalImages">0</span>
+              </div>
+              <div
+                class="stats-card"
+                style="background: linear-gradient(135deg, #f093fb, #f5576c)"
+              >
+                <i class="fas fa-robot"></i> AI Effects
+                <span class="stats-number" id="totalAIEffects">0</span>
+              </div>
+              <div
+                class="stats-card"
+                style="background: linear-gradient(135deg, #4facfe, #00f2fe)"
+              >
+                <i class="fas fa-star"></i> Most Used
+                <span
+                  class="stats-number"
+                  id="mostUsedEffect"
+                  style="font-size: 16px"
+                  >None</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <i class="fas fa-history"></i> Edit History
+            </div>
+            <div
+              class="card-body"
+              id="historyPanel"
+              style="max-height: 300px; overflow-y: auto"
+            >
+              <div class="text-muted text-center py-3">No edits yet</div>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-header">
+              <i class="fas fa-info-circle"></i> Tips
+            </div>
+            <div class="card-body">
+              <ul
+                class="small mb-0"
+                style="list-style-type: none; padding-left: 0"
+              >
+                <li class="mb-2">
+                  <i class="fas fa-cut text-success"></i>
+                  <strong>Remove BG</strong> - AI background removal
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-magic text-primary"></i>
+                  <strong>Cartoon Generator</strong> - Transform photos into
+                  cartoons with 7+ styles!
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div class="modal fade" id="cropModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-crop"></i> Smart Crop</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="crop-container">
+                  <img id="cropImage" src="" style="max-width: 100%" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <h6>Presets:</h6>
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  onclick="setCropPreset('square')"
+                >
+                  Square (1:1)
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  onclick="setCropPreset('landscape')"
+                >
+                  Landscape (16:9)
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  onclick="setCropPreset('portrait')"
+                >
+                  Portrait (4:5)
+                </button>
+                <button
+                  class="btn btn-sm btn-success w-100"
+                  onclick="detectFaceCrop()"
+                >
+                  🎯 AI Face Crop
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" onclick="applyCrop()">
+              Apply Crop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="loginForm">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="loginUsername"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="loginPassword"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-user-plus"></i> Register
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="registerForm">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="regUsername"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="regEmail"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="regPassword"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Register
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+    <script>
+      let cropper = null;
+      let historyStack = [];
+      let adjustmentTimer = null;
+      let currentBrightness = 100;
+      let currentContrast = 100;
+      let isLoggedIn = false;
+      let currentCartoonStyle = "anime";
+      let originalImagePath = null;
+      let compareMode = false;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        checkLoginStatus();
+        initCartoonStyles();
+      });
+
+      function initCartoonStyles() {
+        document.querySelectorAll(".cartoon-style-badge").forEach((el) => {
+          el.addEventListener("click", function () {
+            document
+              .querySelectorAll(".cartoon-style-badge")
+              .forEach((b) => b.classList.remove("active"));
+            this.classList.add("active");
+            currentCartoonStyle = this.dataset.style;
+          });
+        });
+      }
+
+      async function checkLoginStatus() {
+        try {
+          const response = await fetch("/api/check-session");
+          const data = await response.json();
+          if (data.logged_in) {
+            isLoggedIn = true;
+            document.getElementById("loginBtn").style.display = "none";
+            document.getElementById("registerBtn").style.display = "none";
+            document.getElementById("userInfo").style.display = "flex";
+            document.getElementById("username").innerText = data.username;
+            loadUserStats();
+            loadEditHistory();
+          }
+        } catch (error) {
+          console.error("Session check failed:", error);
+        }
+      }
+
+      async function loadUserStats() {
+        try {
+          const response = await fetch("/api/stats");
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("totalImages").innerText =
+              data.stats.total_images || 0;
+            document.getElementById("totalAIEffects").innerText =
+              data.stats.total_ai_effects || 0;
+            document.getElementById("mostUsedEffect").innerText =
+              data.stats.most_used_effect || "None";
+          }
+        } catch (error) {
+          console.error("Failed to load stats:", error);
+        }
+      }
+
+      async function loadEditHistory() {
+        try {
+          const response = await fetch("/api/history");
+          const data = await response.json();
+          if (data.success && data.history.length > 0) {
+            const historyPanel = document.getElementById("historyPanel");
+            historyPanel.innerHTML = data.history
+              .slice(0, 10)
+              .map(
+                (item) => `
+                        <div class="history-item">
+                            <small>${new Date(item.created_at).toLocaleString()}</small>
+                            <div><i class="fas fa-edit"></i> ${item.operation_type}</div>
+                        </div>
+                    `,
+              )
+              .join("");
+          }
+        } catch (error) {
+          console.error("Failed to load history:", error);
+        }
+      }
+
+      function showLoginModal() {
+        new bootstrap.Modal(document.getElementById("loginModal")).show();
+      }
+
+      function showRegisterModal() {
+        new bootstrap.Modal(document.getElementById("registerModal")).show();
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("loginUsername").value;
+          const password = document.getElementById("loginPassword").value;
+
+          try {
+            const response = await fetch("/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+            const data = await response.json();
+
+            if (data.success) {
+              showNotification("Login successful!", "success");
+              bootstrap.Modal.getInstance(
+                document.getElementById("loginModal"),
+              ).hide();
+              location.reload();
+            } else {
+              showNotification("Login failed: " + data.error, "error");
+            }
+          } catch (error) {
+            showNotification("Login failed", "error");
+          }
+        });
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("regUsername").value;
+          const email = document.getElementById("regEmail").value;
+          const password = document.getElementById("regPassword").value;
+
+          try {
+            const response = await fetch("/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password }),
+            });
+            const data = await response.json();
+
+            if (data.success) {
+              showNotification("Registration successful!", "success");
+              bootstrap.Modal.getInstance(
+                document.getElementById("registerModal"),
+              ).hide();
+              location.reload();
+            } else {
+              showNotification("Registration failed: " + data.error, "error");
+            }
+          } catch (error) {
+            showNotification("Registration failed", "error");
+          }
+        });
+
+      function logout() {
+        fetch("/logout").then(() => location.reload());
+      }
+
+      function updateDisplayImage(newSrc) {
+        const timestamped = newSrc + "?t=" + new Date().getTime();
+        document.getElementById("currentImage").src = timestamped;
+        document.getElementById("sliderEdited").src = timestamped;
+        if (originalImagePath) {
+          document.getElementById("sliderOriginal").src = originalImagePath + "?t=" + new Date().getTime();
+        }
+      }
+
+      function hideAllControlPanels() {
+        document.querySelectorAll(".effect-options-panel").forEach(p => p.style.display = "none");
+      }
+      
+      function showBokehPanel() {
+        hideAllControlPanels();
+        document.getElementById("bokehPanel").style.display = "block";
+      }
+      
+      function showNeonPanel() {
+        hideAllControlPanels();
+        document.getElementById("neonPanel").style.display = "block";
+      }
+      
+      function showSplashPanel() {
+        hideAllControlPanels();
+        document.getElementById("splashPanel").style.display = "block";
+      }
+      
+      function showExposurePanel() {
+        hideAllControlPanels();
+        document.getElementById("exposurePanel").style.display = "block";
+      }
+
+      async function uploadImage(input) {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (input.files && input.files[0]) {
+          const formData = new FormData();
+          formData.append("image", input.files[0]);
+          showLoading();
+          try {
+            const response = await fetch("/api/upload", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.success) {
+              originalImagePath = data.image_path;
+              // Reset compare mode on new upload
+              compareMode = false;
+              document.getElementById("comparisonSlider").style.display = "none";
+              document.getElementById("currentImage").style.display = "block";
+              
+              updateDisplayImage(data.image_path);
+              showNotification("Image uploaded successfully!", "success");
+              loadUserStats();
+            } else {
+              showNotification("Upload failed: " + data.error, "error");
+            }
+          } catch (error) {
+            showNotification("Upload failed", "error");
+          } finally {
+            hideLoading();
+          }
+        }
+      }
+
+      async function applyFilter(filterType) {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch("/api/filter", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filter: filterType }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification(`${filterType} filter applied!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Filter failed", "error");
+          }
+        } catch (error) {
+          showNotification("Filter failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function generateCartoon() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch("/api/cartoon-convert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ style: currentCartoonStyle }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            const methodBadge = document.getElementById("cartoonMethodBadge");
+            methodBadge.textContent = `🎨 Generated with ${data.method}`;
+            methodBadge.style.display = "inline-block";
+            showNotification(`Cartoon style (${currentCartoonStyle}) generated!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Cartoon generation failed", "error");
+          }
+        } catch (error) {
+          showNotification("Cartoon generation failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function removeBackground() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch("/api/background-remove", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Background removed!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Background removal failed", "error");
+          }
+        } catch (error) {
+          showNotification("Background removal failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function enhanceImage() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        const style = document.getElementById("enhanceStyle").value;
+        showLoading();
+        try {
+          const response = await fetch("/api/enhance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ style: style }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification(`Enhanced with ${style} style!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Enhancement failed", "error");
+          }
+        } catch (error) {
+          showNotification("Enhancement failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyBokeh() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        const radius = document.getElementById("bokehBlurRadius").value;
+        showLoading();
+        try {
+          const response = await fetch("/api/portrait-bokeh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ blur_radius: radius }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Portrait Bokeh applied!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Bokeh failed", "error");
+          }
+        } catch (error) {
+          showNotification("Bokeh failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyNeon() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        const color = document.getElementById("neonColor").value;
+        showLoading();
+        try {
+          const response = await fetch("/api/neon-glow", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ color: color }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification(`Neon Glow (${color}) applied!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Neon Glow failed", "error");
+          }
+        } catch (error) {
+          showNotification("Neon Glow failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyColorSplash() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        const color = document.getElementById("splashColor").value;
+        showLoading();
+        try {
+          const response = await fetch("/api/color-splash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ color: color }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification(`Color Splash (${color}) applied!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Color Splash failed", "error");
+          }
+        } catch (error) {
+          showNotification("Color Splash failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyDoubleExposure() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        const texture = document.getElementById("exposureTexture").value;
+        showLoading();
+        try {
+          const response = await fetch("/api/double-exposure", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texture: texture }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification(`Double Exposure (${texture}) applied!`, "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Double Exposure failed", "error");
+          }
+        } catch (error) {
+          showNotification("Double Exposure failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyStickerMaker() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/sticker-generator", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Sticker border created!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Sticker Maker failed", "error");
+          }
+        } catch (error) {
+          showNotification("Sticker Maker failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyFaceBeautify() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/face-beautify", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Face skin smoothed and beautified!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Face Beautify failed", "error");
+          }
+        } catch (error) {
+          showNotification("Face Beautify failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyAutoLight() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/auto-light", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Lighting auto contrast optimized!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Auto Light failed", "error");
+          }
+        } catch (error) {
+          showNotification("Auto Light failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyFaceSpotlight() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/face-spotlight", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Spotlight centered on face!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Face Spotlight failed", "error");
+          }
+        } catch (error) {
+          showNotification("Face Spotlight failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyGlitchEffect() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/glitch", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Cyberpunk Glitch applied!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Glitch failed", "error");
+          }
+        } catch (error) {
+          showNotification("Glitch failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyThermalVision() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/thermal", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Thermal vision heatmap applied!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Thermal failed", "error");
+          }
+        } catch (error) {
+          showNotification("Thermal failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applySketchBlendEffect() {
+        if (!isLoggedIn) { showLoginRequired(); return; }
+        showLoading();
+        try {
+          const response = await fetch("/api/sketch-blend", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            updateDisplayImage(data.edited_image);
+            showNotification("Sketch blend outline applied!", "success");
+            loadUserStats();
+          } else {
+            showNotification(data.error || "Sketch Blend failed", "error");
+          }
+        } catch (error) {
+          showNotification("Sketch Blend failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function rotateImage(angle) {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+
+        try {
+          const response = await fetch("/api/rotate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ angle: angle }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+            showNotification("Image rotated!", "success");
+          }
+        } catch (error) {
+          showNotification("Rotation failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function flipImage(direction) {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+
+        try {
+          const response = await fetch("/api/flip", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ direction: direction }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+            showNotification("Image flipped!", "success");
+          }
+        } catch (error) {
+          showNotification("Flip failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function adjustBrightness(value) {
+        currentBrightness = value;
+        document.getElementById("brightnessValue").innerText = value;
+        if (adjustmentTimer) clearTimeout(adjustmentTimer);
+        adjustmentTimer = setTimeout(() => applyAdjustments(), 300);
+      }
+
+      function adjustContrast(value) {
+        currentContrast = value;
+        document.getElementById("contrastValue").innerText = value;
+        if (adjustmentTimer) clearTimeout(adjustmentTimer);
+        adjustmentTimer = setTimeout(() => applyAdjustments(), 300);
+      }
+
+      async function applyAdjustments() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch("/api/adjust", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              brightness: currentBrightness / 100,
+              contrast: currentContrast / 100,
+            }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+          }
+        } catch (error) {
+          console.error("Adjustment failed:", error);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function resetAdjustments() {
+        currentBrightness = 100;
+        currentContrast = 100;
+        document.getElementById("brightnessSlider").value = 100;
+        document.getElementById("contrastSlider").value = 100;
+        document.getElementById("brightnessValue").innerText = "100";
+        document.getElementById("contrastValue").innerText = "100";
+        applyAdjustments();
+      }
+
+      function applyTemplate(template) {
+        const dimensions = {
+          instagram: { width: 1080, height: 1080 },
+          youtube: { width: 1280, height: 720 },
+          facebook: { width: 851, height: 315 },
+          linkedin: { width: 1104, height: 736 },
+        };
+        const dim = dimensions[template];
+        if (dim) resizeToTemplate(dim.width, dim.height);
+      }
+
+      async function resizeToTemplate(width, height) {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+
+        try {
+          const response = await fetch("/api/resize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              width: width,
+              height: height,
+              maintain_aspect: true,
+            }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+            showNotification(`Resized to ${width}x${height}!`, "success");
+          }
+        } catch (error) {
+          showNotification("Resize failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function openCropModal() {
+        const img = document.getElementById("currentImage");
+        if (!img.src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+
+        new bootstrap.Modal(document.getElementById("cropModal")).show();
+        const cropImg = document.getElementById("cropImage");
+        cropImg.src = img.src;
+
+        cropImg.onload = function () {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropImg, {
+            aspectRatio: NaN,
+            viewMode: 1,
+            dragMode: "move",
+          });
+        };
+      }
+
+      function setCropPreset(preset) {
+        if (!cropper) return;
+        const ratios = { square: 1, landscape: 16 / 9, portrait: 4 / 5 };
+        cropper.setAspectRatio(ratios[preset]);
+      }
+
+      async function detectFaceCrop() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        showNotification("Detecting faces...", "info");
+        try {
+          const response = await fetch("/api/face-detect", { method: "POST" });
+          const data = await response.json();
+          if (data.success && data.face_count > 0 && cropper) {
+            const face = data.faces[0];
+            cropper.setCropBoxData({
+              left: face[0],
+              top: face[1],
+              width: face[2],
+              height: face[3],
+            });
+            showNotification(`Detected ${data.face_count} face(s)!`, "success");
+          } else {
+            showNotification("No faces detected", "info");
+          }
+        } catch (error) {
+          showNotification("Face detection failed", "error");
+        }
+      }
+
+      async function detectFaces() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch("/api/face-detect", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            showNotification(
+              data.face_count > 0
+                ? `Found ${data.face_count} face(s)!`
+                : "No faces detected",
+              data.face_count > 0 ? "success" : "info",
+            );
+          }
+        } catch (error) {
+          showNotification("Face detection failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function applyCrop() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!cropper) return;
+        const cropData = cropper.getData();
+        showLoading();
+
+        try {
+          const response = await fetch("/api/crop", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              x: cropData.x,
+              y: cropData.y,
+              width: cropData.width,
+              height: cropData.height,
+            }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+            showNotification("Crop applied!", "success");
+            bootstrap.Modal.getInstance(
+              document.getElementById("cropModal"),
+            ).hide();
+          }
+        } catch (error) {
+          showNotification("Crop failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function resetImage() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("Upload an image first", "error");
+          return;
+        }
+        showLoading();
+
+        try {
+          const response = await fetch("/api/reset", { method: "POST" });
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById("currentImage").src =
+              data.edited_image + "?t=" + new Date().getTime();
+            showNotification("Reset to original!", "success");
+            currentBrightness = 100;
+            currentContrast = 100;
+            document.getElementById("brightnessSlider").value = 100;
+            document.getElementById("contrastSlider").value = 100;
+            loadUserStats();
+          }
+        } catch (error) {
+          showNotification("Reset failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function downloadImage() {
+        if (!isLoggedIn) {
+          showLoginRequired();
+          return;
+        }
+        if (!document.getElementById("currentImage").src) {
+          showNotification("No image to download", "error");
+          return;
+        }
+        showLoading();
+
+        try {
+          const response = await fetch("/api/download", { method: "POST" });
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `visioncraft_edited_${new Date().getTime()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+          showNotification("Download started!", "success");
+        } catch (error) {
+          showNotification("Download failed", "error");
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function showLoading() {
+        const existing = document.getElementById("loadingOverlay");
+        if (existing) existing.remove();
+        const overlay = document.createElement("div");
+        overlay.id = "loadingOverlay";
+        overlay.className = "loading-overlay";
+        overlay.innerHTML = `<div class="loading-content"><div class="loading-spinner"></div><h5>Processing...</h5><p class="text-muted mb-0">Applying AI magic ✨</p></div>`;
+        document.body.appendChild(overlay);
+      }
+
+      function hideLoading() {
+        const overlay = document.getElementById("loadingOverlay");
+        if (overlay) overlay.remove();
+      }
+
+      function showNotification(message, type) {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        const icon =
+          type === "success"
+            ? "fa-check-circle"
+            : type === "error"
+              ? "fa-exclamation-circle"
+              : "fa-info-circle";
+        notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function showLoginRequired() {
+        showNotification("Please login to use AI effects", "info");
+        window.location.href = "/login";
+      }
+
+      function toggleCompareMode() {
+        if (!originalImagePath) {
+          showNotification("Upload an image first to use Split View", "error");
+          return;
+        }
+        
+        compareMode = !compareMode;
+        const slider = document.getElementById("comparisonSlider");
+        const currentImg = document.getElementById("currentImage");
+        const toggleBtn = document.getElementById("compareToggleBtn");
+        
+        if (compareMode) {
+          currentImg.style.display = "none";
+          slider.style.display = "block";
+          toggleBtn.innerHTML = '<i class="fas fa-image"></i> Normal View';
+          toggleBtn.className = "btn btn-info";
+          
+          document.getElementById("sliderOriginal").src = originalImagePath + "?t=" + new Date().getTime();
+          document.getElementById("sliderEdited").src = currentImg.src;
+          
+          initComparisonSlider();
+        } else {
+          slider.style.display = "none";
+          currentImg.style.display = "block";
+          toggleBtn.innerHTML = '<i class="fas fa-columns"></i> Split View';
+          toggleBtn.className = "btn btn-warning";
+        }
+      }
+
+      function initComparisonSlider() {
+        const slider = document.getElementById("comparisonSlider");
+        const handle = document.getElementById("sliderHandle");
+        const editedContainer = document.getElementById("sliderEditedContainer");
+        const editedImg = document.getElementById("sliderEdited");
+        
+        if (!slider || !handle || !editedContainer || !editedImg) return;
+        
+        let active = false;
+        
+        function adjustImageSizes() {
+          const sliderWidth = slider.offsetWidth;
+          editedImg.style.width = sliderWidth + "px";
+        }
+        
+        adjustImageSizes();
+        // Set an interval to handle lazy loading layout updates
+        setTimeout(adjustImageSizes, 200);
+        
+        window.addEventListener("resize", adjustImageSizes);
+        
+        handle.addEventListener("mousedown", () => { active = true; });
+        window.addEventListener("mouseup", () => { active = false; });
+        window.addEventListener("mouseleave", () => { active = false; });
+        
+        window.addEventListener("mousemove", (e) => {
+          if (!active) return;
+          updateSlider(e.clientX);
+        });
+        
+        handle.addEventListener("touchstart", () => { active = true; });
+        window.addEventListener("touchend", () => { active = false; });
+        
+        window.addEventListener("touchmove", (e) => {
+          if (!active) return;
+          updateSlider(e.touches[0].clientX);
+        });
+        
+        function updateSlider(clientX) {
+          const rect = slider.getBoundingClientRect();
+          let x = clientX - rect.left;
+          if (x < 0) x = 0;
+          if (x > rect.width) x = rect.width;
+          
+          const percentage = (x / rect.width) * 100;
+          handle.style.left = percentage + "%";
+          editedContainer.style.width = percentage + "%";
+        }
+      }
+    </script>
+  </body>
+</html>
